@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Iniciar Sesión</title>
+  <style>
+    body {
+      background-color: #f0f8ff;
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      color: darkblue;
+      margin-bottom: 20px;
+      font-size: 32px;
+    }
+
+    form {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+
+    form input, form button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    #mensaje {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    .enlace-registro {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .enlace-registro a {
+      color: darkblue;
+      text-decoration: none;
+    }
+
+    .enlace-registro a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Iniciar Sesión</h1>
+  <form id="loginForm">
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Contraseña" required>
+    <button type="submit">Entrar</button>
+
+    <div class="enlace-registro">
+      ¿No tenés cuenta? <a href="index.html">Registrate acá</a>
+    </div>
+  </form>
+  <p id="mensaje"></p>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const mensaje = document.getElementById('mensaje');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const datos = Object.fromEntries(new FormData(form));
+
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(datos)
+        });
+        const resultado = await res.json();
+        mensaje.textContent = resultado.mensaje;
+        mensaje.style.color = res.ok ? 'green' : 'red';
+        if (res.ok) {
+          // Redirigir si inicia sesión correctamente
+          setTimeout(() => {
+            window.location.href = "/dashboard.html"; // podés cambiarlo por la página que quieras
+          }, 1500);
+        }
+      } catch (error) {
+        mensaje.textContent = 'Error en la conexión';
+        mensaje.style.color = 'red';
+      }
+    });
+  </script>
+</body>
+</html>
+
