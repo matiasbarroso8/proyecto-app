@@ -3,74 +3,125 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Iniciar Sesión</title>
+  <title>Iniciar sesión</title>
+  <link rel="stylesheet" href="styles.css">
+
   <style>
     body {
-      background-color: #f0f8ff;
+      margin: 0;
       font-family: Arial, sans-serif;
-      padding: 40px;
+      background-size: cover;
+      background-position: center;
+      transition: background-image 1s ease-in-out;
+      min-height: 100vh;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
+      position: relative;
     }
 
-    h1 {
-      color: darkblue;
-      margin-bottom: 20px;
-      font-size: 32px;
-    }
-
-    form {
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 300px;
-    }
-
-    form input, form button {
-      display: block;
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.5);
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      font-size: 16px;
+      height: 100%;
+      z-index: 0;
     }
 
-    #mensaje {
-      margin-top: 20px;
-      font-weight: bold;
+    form#loginForm {
+      position: relative;
+      z-index: 1;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+      max-width: 400px;
+      width: 90%;
     }
 
-    .enlace-registro {
-      margin-top: 10px;
+    form#loginForm h2 {
       text-align: center;
-      font-size: 14px;
+      margin-bottom: 20px;
     }
 
-    .enlace-registro a {
-      color: darkblue;
+    form#loginForm input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    form#loginForm button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    form#loginForm button:hover {
+      background-color: #0056b3;
+    }
+
+    .enlace-login {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .enlace-login a {
+      color: #007bff;
       text-decoration: none;
     }
 
-    .enlace-registro a:hover {
-      text-decoration: underline;
+    .message {
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <h1>Iniciar Sesión</h1>
-  <form id="loginForm">
-    <input type="email" name="email" placeholder="Email" required>
-    <input type="password" name="password" placeholder="Contraseña" required>
-    <button type="submit">Entrar</button>
+  <div class="overlay"></div>
 
-    <div class="enlace-registro">
-      ¿No tenés cuenta? <a href="index.html">Registrate acá</a>
+  <form id="loginForm">
+    <h2>Iniciar sesión</h2>
+
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="password" name="password" placeholder="Contraseña" required />
+    
+    <button type="submit">Iniciar sesión</button>
+    <p id="mensaje" class="message"></p>
+
+    <div class="enlace-login">
+      ¿No tenés cuenta? <a href="registro.html">Registrate</a>
     </div>
   </form>
-  <p id="mensaje"></p>
 
   <script>
+    // Fondo rotativo
+    const imagenes = [
+      'img/gualeguaychu1.jpg',
+      'img/gualeguaychu2.jpg',
+      'img/gualeguaychu3.jpg',
+      'img/gualeguaychu4.jpg',
+      'img/gualeguaychu5.jpg',
+      'img/gualeguaychu6.jpg'
+    ];
+    let index = 0;
+
+    function cambiarFondo() {
+      document.body.style.backgroundImage = `url(${imagenes[index]})`;
+      index = (index + 1) % imagenes.length;
+    }
+
+    cambiarFondo(); // primer fondo
+    setInterval(cambiarFondo, 5000); // cambia cada 5 segundos
+
+    // Lógica de login
     const form = document.getElementById('loginForm');
     const mensaje = document.getElementById('mensaje');
 
@@ -84,14 +135,14 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(datos)
         });
+
         const resultado = await res.json();
-        mensaje.textContent = resultado.mensaje;
-        mensaje.style.color = res.ok ? 'green' : 'red';
         if (res.ok) {
-          // Redirigir si inicia sesión correctamente
-          setTimeout(() => {
-            window.location.href = "/dashboard.html"; // podés cambiarlo por la página que quieras
-          }, 1500);
+          localStorage.setItem('usuario', JSON.stringify(resultado.usuario));
+          window.location.href = 'dashboard.html';
+        } else {
+          mensaje.textContent = resultado.mensaje;
+          mensaje.style.color = 'red';
         }
       } catch (error) {
         mensaje.textContent = 'Error en la conexión';
@@ -101,4 +152,5 @@
   </script>
 </body>
 </html>
+
 

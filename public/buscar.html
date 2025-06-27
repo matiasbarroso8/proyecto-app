@@ -1,0 +1,90 @@
+<!-- public/buscar.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Buscar Propiedades</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+
+    .card img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .card h3 {
+      margin-top: 0;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Propiedades Disponibles</h2>
+    <div id="listaPropiedades"></div>
+  </div>
+
+  <script>
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (!usuario || usuario.tipo !== 'inquilino') {
+      window.location.href = 'login.html';
+    }
+
+    async function cargarPropiedades() {
+      const res = await fetch('/propiedades');
+      const propiedades = await res.json();
+      const lista = document.getElementById('listaPropiedades');
+
+      lista.innerHTML = propiedades.map(p => `
+        <div class="card">
+          ${p.imagen ? `<img src="${p.imagen}" alt="Imagen de propiedad" />` : ''}
+          <h3>${p.titulo}</h3>
+          <p>${p.descripcion}</p>
+          <p><strong>Dirección:</strong> ${p.direccion}</p>
+          <p><strong>Precio:</strong> $${p.precio}</p>
+          <button onclick="agregarFavorito('${p._id}')">Agregar a favoritos</button>
+        </div>
+      `).join('');
+    }
+
+    async function agregarFavorito(idPropiedad) {
+      const res = await fetch('/favoritos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emailInquilino: usuario.email, idPropiedad })
+      });
+      const r = await res.json();
+      alert(r.mensaje);
+    }
+
+    cargarPropiedades();
+  </script>
+</body>
+</html>
+
+
+

@@ -3,102 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Registro Usuario</title>
+  <title>Inicio - Alquileres Temporarios</title>
   <style>
     body {
-      background-color: #f0f8ff;
+      background-color: #f9f9f9;
       font-family: Arial, sans-serif;
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    h1 {
-      color: darkblue;
-      margin-bottom: 20px;
-      font-size: 32px;
-    }
-
-    form {
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 300px;
-    }
-
-    form input, form select, form button {
-      display: block;
-      width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      font-size: 16px;
-    }
-
-    #mensaje {
-      margin-top: 20px;
-      font-weight: bold;
-    }
-
-    .enlace-login {
-      margin-top: 10px;
+      margin: 0;
+      padding: 0;
       text-align: center;
-      font-size: 14px;
     }
 
-    .enlace-login a {
-      color: darkblue;
+    header {
+      background-color: #003366;
+      color: white;
+      padding: 20px 0;
+    }
+
+    .banner {
+      width: 100%;
+      max-height: 500px;
+      object-fit: cover;
+      border-bottom: 4px solid #003366;
+    }
+
+    .botones {
+      margin: 40px 0;
+    }
+
+    .botones a {
       text-decoration: none;
+      color: white;
+      background-color: #003366;
+      padding: 12px 24px;
+      margin: 0 10px;
+      border-radius: 8px;
+      font-size: 18px;
+      transition: background-color 0.3s;
     }
 
-    .enlace-login a:hover {
-      text-decoration: underline;
+    .botones a:hover {
+      background-color: #0055aa;
+    }
+
+    footer {
+      margin-top: 50px;
+      font-size: 14px;
+      color: #555;
     }
   </style>
 </head>
 <body>
-  <h1>¡ESTE ES EL NUEVO INDEX.HTML!</h1>
-  <form id="registroForm">
-    <input type="text" name="nombre" placeholder="Nombre" required>
-    <input type="email" name="email" placeholder="Email" required>
-    <input type="password" name="password" placeholder="Contraseña" required>
-    <select name="tipo" required>
-      <option value="">Tipo de usuario</option>
-      <option value="dueño">Dueño</option>
-      <option value="inquilino">Inquilino</option>
-    </select>
-    <button type="submit">Registrarse</button>
+  <header>
+    <h1>Bienvenido a Alquileres Temporarios Gualeguaychu</h1>
+    <p>Encontrá o publicá tu propiedad fácilmente</p>
+  </header>
 
-    <div class="enlace-login">
-      ¿Ya tenés cuenta? <a href="login.html">Iniciar sesión</a>
-    </div>
-  </form>
-  <p id="mensaje"></p>
+  <!-- Imagen banner -->
+  <img src="/img/rio-y-puentegualeguaychu.jpg" alt="Banner alquiler" class="banner">
 
-  <script>
-    const form = document.getElementById('registroForm');
-    const mensaje = document.getElementById('mensaje');
+  <div class="botones">
+    <a href="registro.html">Registrarse</a>
+    <a href="login.html">Iniciar Sesión</a>
+  </div>
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const datos = Object.fromEntries(new FormData(form));
-      
-      try {
-        const res = await fetch('/registro', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(datos)
-        });
-        const resultado = await res.json();
-        mensaje.textContent = resultado.mensaje;
-        mensaje.style.color = res.ok ? 'green' : 'red';
-        if (res.ok) form.reset();
-      } catch (error) {
-        mensaje.textContent = 'Error en la conexión';
-        mensaje.style.color = 'red';
-      }
-    });
-  </script>
+  <footer>
+    &copy; 2025 Las Flores de Maquiavelo. Todos los derechos reservados.
+  </footer>
 </body>
 </html>

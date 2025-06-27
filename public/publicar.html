@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Publicar Propiedad</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Publicar nueva propiedad</h1>
+    <form id="formPublicacion">
+      <input type="text" id="titulo" placeholder="Título" required />
+      <input type="text" id="direccion" placeholder="Dirección" required />
+      <input type="number" id="precio" placeholder="Precio" required />
+      <textarea id="descripcion" placeholder="Descripción" required></textarea>
+      <button type="submit">Publicar</button>
+    </form>
+
+    <!-- Botón directo sin <a> -->
+    <button id="verMisPublicacionesBtn">Ver mis publicaciones</button>
+  </div>
+
+  <script>
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    const form = document.getElementById('formPublicacion');
+    const verBtn = document.getElementById('verMisPublicacionesBtn');
+
+    // Verificar sesión
+    if (!usuario || usuario.tipo !== 'dueño') {
+      alert('Acceso no autorizado');
+      window.location.href = 'login.html';
+    }
+
+    // Redirección al hacer clic en "Ver mis publicaciones"
+    verBtn.addEventListener('click', () => {
+      if (usuario?.email) {
+        window.location.href = `ver-propiedades.html?email=${encodeURIComponent(usuario.email)}`;
+      } else {
+        alert('No se encontró el email del usuario.');
+      }
+    });
+
+    // Publicar propiedad
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const nuevaPropiedad = {
+        titulo: document.getElementById('titulo').value,
+        direccion: document.getElementById('direccion').value,
+        precio: document.getElementById('precio').value,
+        descripcion: document.getElementById('descripcion').value,
+        emailDueno: usuario.email
+      };
+
+      const res = await fetch('/publicar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nuevaPropiedad)
+      });
+
+      if (res.ok) {
+        alert('Propiedad publicada correctamente');
+        form.reset();
+      } else {
+        alert('Error al publicar la propiedad');
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+

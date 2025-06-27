@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mis Propiedades</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .propiedad {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .propiedad img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+
+    .titulo {
+      font-weight: bold;
+      font-size: 20px;
+      margin-top: 10px;
+    }
+
+    .precio {
+      color: green;
+      font-weight: bold;
+    }
+
+    .volver {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .volver a {
+      text-decoration: none;
+      color: white;
+      background-color: #007bff;
+      padding: 10px 20px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center;">Mis Propiedades Publicadas</h1>
+  <div id="contenedorPropiedades"></div>
+
+  <div class="volver">
+    <a href="dashboard.html">Volver al panel</a>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get('email');
+
+    if (!email) {
+      document.getElementById('contenedorPropiedades').innerHTML = "<p>No se proporcionó el email.</p>";
+    } else {
+      fetch(`/mis-propiedades/${encodeURIComponent(email)}`)
+        .then(res => res.json())
+        .then(data => {
+          const contenedor = document.getElementById('contenedorPropiedades');
+          if (data.length === 0) {
+            contenedor.innerHTML = "<p>No tenés propiedades publicadas.</p>";
+          } else {
+            data.forEach(prop => {
+              const div = document.createElement('div');
+              div.classList.add('propiedad');
+              div.innerHTML = `
+                <img src="${prop.imagen}" alt="Imagen de propiedad" />
+                <div class="titulo">${prop.titulo}</div>
+                <div>${prop.descripcion}</div>
+                <div><strong>Dirección:</strong> ${prop.direccion}</div>
+                <div class="precio">$${prop.precio}</div>
+              `;
+              contenedor.appendChild(div);
+            });
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          document.getElementById('contenedorPropiedades').innerHTML = "<p>Error al cargar propiedades.</p>";
+        });
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+

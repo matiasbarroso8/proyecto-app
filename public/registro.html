@@ -1,56 +1,49 @@
+<!-- registro.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Usuario</title>
-</head><head>
-  <meta charset="UTF-8" />
-  <title>Registro de Usuario</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <h1>Registro</h1>
-  <form id="registroForm">
-    <input type="text" id="nombre" placeholder="Nombre" required><br>
-    <input type="email" id="email" placeholder="Email" required><br>
-    <input type="password" id="password" placeholder="Contraseña" required><br>
-    <select id="tipo" required>
-      <option value="">Selecciona tipo de usuario</option>
-      <option value="dueño">Dueño</option>
+<body class="formulario">
+  <form id="formRegistro">
+    <h2>Registro</h2>
+    <input type="text" name="nombre" placeholder="Nombre completo" required>
+    <input type="email" name="email" placeholder="Correo electrónico" required>
+    <input type="password" name="password" placeholder="Contraseña" required>
+    <select name="tipo" required>
+      <option value="">Seleccioná tu rol</option>
       <option value="inquilino">Inquilino</option>
-    </select><br>
+      <option value="dueño">Dueño</option>
+    </select>
     <button type="submit">Registrarse</button>
+    <p id="mensaje"></p>
+    <p class="enlace">¿Ya tenés cuenta? <a href="login.html">Iniciar sesión</a></p>
   </form>
-
-  <p id="mensaje"></p>
-
   <script>
-    const form = document.getElementById('registroForm');
+    const form = document.getElementById('formRegistro');
     const mensaje = document.getElementById('mensaje');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const datos = Object.fromEntries(new FormData(form));
 
-      const nombre = document.getElementById('nombre').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const tipo = document.getElementById('tipo').value;
-
-      if (!nombre || !email || !password || !tipo) {
-        mensaje.textContent = 'Todos los campos son obligatorios.';
+      try {
+        const res = await fetch('/registro', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(datos)
+        });
+        const resultado = await res.json();
+        mensaje.textContent = resultado.mensaje;
+        mensaje.style.color = res.ok ? 'green' : 'red';
+        if (res.ok) form.reset();
+      } catch {
+        mensaje.textContent = 'Error en la conexión';
         mensaje.style.color = 'red';
-        return;
       }
-
-      const res = await fetch('/registro', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre, email, password, tipo })
-      });
-
-      const data = await res.json();
-      mensaje.textContent = data.mensaje;
-      mensaje.style.color = res.ok ? 'green' : 'red';
     });
   </script>
 </body>

@@ -3,44 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bienvenido</title>
-  <style>
-    body {
-      background-color: #e6f7ff;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding-top: 60px;
-    }
-
-    h1 {
-      color: #004080;
-      font-size: 36px;
-    }
-
-    p {
-      font-size: 18px;
-      margin-top: 20px;
-    }
-
-    a {
-      display: inline-block;
-      margin-top: 30px;
-      text-decoration: none;
-      background-color: #004080;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-    }
-
-    a:hover {
-      background-color: #0066cc;
-    }
-  </style>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-  <h1>¡Bienvenido a la plataforma de alquileres!</h1>
-  <p>Tu sesión se inició correctamente.</p>
+<body class="dashboard-page">
+  <div class="dashboard">
+    <h1>Bienvenido al Panel</h1>
+    <p class="usuario-info" id="bienvenida"></p>
 
-  <a href="index.html">Cerrar sesión / Volver al registro</a>
+    <div class="acciones" id="accionesUsuario"></div>
+
+    <button class="cerrar-sesion" onclick="cerrarSesion()">Cerrar sesión</button>
+  </div>
+
+  <script>
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    const bienvenida = document.getElementById('bienvenida');
+    const accionesUsuario = document.getElementById('accionesUsuario');
+
+    if (!usuario) {
+      window.location.href = 'login.html';
+    } else {
+      const { nombre, tipo } = usuario;
+      bienvenida.textContent = `Hola ${nombre}, sos un ${tipo}. ¡Bienvenido!`;
+
+      if (tipo === 'dueño') {
+        accionesUsuario.innerHTML = `
+          <a href="publicar.html"><button>Publicar propiedad</button></a>
+          <button onclick="verMisPropiedades()">Ver mis propiedades</button>
+        `;
+      } else if (tipo === 'inquilino') {
+        accionesUsuario.innerHTML = `
+          <a href="buscar.html"><button>Buscar propiedades</button></a>
+          <button onclick="verFavoritos()">Ver favoritos</button>
+        `;
+      }
+    }
+
+    function verMisPropiedades() {
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      const email = encodeURIComponent(usuario.email);
+      window.location.href = `ver-propiedades.html?email=${email}`;
+    }
+
+    function verFavoritos() {
+      const usuario = JSON.parse(localStorage.getItem('usuario'));
+      const email = encodeURIComponent(usuario.email);
+      window.location.href = `favoritos.html?email=${email}`;
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem('usuario');
+      window.location.href = 'login.html';
+    }
+  </script>
 </body>
 </html>
+
