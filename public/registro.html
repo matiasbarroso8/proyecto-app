@@ -1,48 +1,116 @@
-<!-- registro.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Registro de Usuario</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .form-container {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .link-login {
+      display: block;
+      text-align: center;
+      margin-top: 15px;
+      color: #333;
+    }
+
+    .link-login:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
-<body class="formulario">
-  <form id="formRegistro">
-    <h2>Registro</h2>
-    <input type="text" name="nombre" placeholder="Nombre completo" required>
-    <input type="email" name="email" placeholder="Correo electrónico" required>
-    <input type="password" name="password" placeholder="Contraseña" required>
-    <select name="tipo" required>
-      <option value="">Seleccioná tu rol</option>
-      <option value="inquilino">Inquilino</option>
-      <option value="dueño">Dueño</option>
-    </select>
-    <button type="submit">Registrarse</button>
-    <p id="mensaje"></p>
-    <p class="enlace">¿Ya tenés cuenta? <a href="login.html">Iniciar sesión</a></p>
-  </form>
+<body>
+  <div class="form-container">
+    <h1>Crear cuenta</h1>
+    <form id="formRegistro">
+      <input type="text" id="nombre" placeholder="Nombre completo" required />
+      <input type="email" id="email" placeholder="Correo electrónico" required />
+      <input type="password" id="password" placeholder="Contraseña" required />
+      <select id="tipo" required>
+        <option value="" disabled selected>Seleccioná tu rol</option>
+        <option value="dueño">Dueño</option>
+        <option value="inquilino">Inquilino</option>
+      </select>
+      <button type="submit">Registrarme</button>
+    </form>
+    <a class="link-login" href="login.html">¿Ya tenés cuenta? Iniciá sesión</a>
+  </div>
+
   <script>
     const form = document.getElementById('formRegistro');
-    const mensaje = document.getElementById('mensaje');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const datos = Object.fromEntries(new FormData(form));
 
-      try {
-        const res = await fetch('/registro', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(datos)
-        });
-        const resultado = await res.json();
-        mensaje.textContent = resultado.mensaje;
-        mensaje.style.color = res.ok ? 'green' : 'red';
-        if (res.ok) form.reset();
-      } catch {
-        mensaje.textContent = 'Error en la conexión';
-        mensaje.style.color = 'red';
+      const usuario = {
+        nombre: document.getElementById('nombre').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        tipo: document.getElementById('tipo').value
+      };
+
+      const res = await fetch('/registro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(usuario)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(data.mensaje);
+        window.location.href = 'login.html';
+      } else {
+        alert(data.mensaje || 'Error al registrarse.');
       }
     });
   </script>

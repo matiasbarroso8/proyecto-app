@@ -1,4 +1,3 @@
-<!-- public/buscar.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,7 +5,46 @@
   <title>Buscar Propiedades</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f0f0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .buscador {
+      margin-bottom: 30px;
+    }
+
+    .buscador input {
+      padding: 10px;
+      width: 250px;
+      font-size: 1em;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .buscador button {
+      padding: 10px 15px;
+      font-size: 1em;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    .buscador button:hover {
+      background-color: #0056b3;
+    }
+
     .card {
+      background: white;
       border: 1px solid #ccc;
       border-radius: 10px;
       padding: 15px;
@@ -15,6 +53,7 @@
       margin-left: auto;
       margin-right: auto;
       text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
     .card img {
@@ -27,26 +66,17 @@
     .card h3 {
       margin-top: 0;
     }
-
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Propiedades Disponibles</h2>
-    <div id="listaPropiedades"></div>
+  <h2>Buscar Propiedades</h2>
+
+  <div class="buscador">
+    <input type="text" id="busqueda" placeholder="Buscar por ubicación (ciudad)" />
+    <button onclick="buscar()">Buscar</button>
   </div>
+
+  <div id="listaPropiedades"></div>
 
   <script>
     const usuario = JSON.parse(localStorage.getItem('usuario'));
@@ -54,10 +84,18 @@
       window.location.href = 'login.html';
     }
 
-    async function cargarPropiedades() {
-      const res = await fetch('/propiedades');
+    async function buscar() {
+      const query = document.getElementById('busqueda').value.trim();
+      const url = query ? `/buscar?ubicacion=${encodeURIComponent(query)}` : '/propiedades';
+
+      const res = await fetch(url);
       const propiedades = await res.json();
+
       const lista = document.getElementById('listaPropiedades');
+      if (propiedades.length === 0) {
+        lista.innerHTML = `<p>No se encontraron propiedades en esa ubicación.</p>`;
+        return;
+      }
 
       lista.innerHTML = propiedades.map(p => `
         <div class="card">
@@ -65,6 +103,7 @@
           <h3>${p.titulo}</h3>
           <p>${p.descripcion}</p>
           <p><strong>Dirección:</strong> ${p.direccion}</p>
+          <p><strong>Ubicación:</strong> ${p.ubicacion || 'No especificada'}</p>
           <p><strong>Precio:</strong> $${p.precio}</p>
           <button onclick="agregarFavorito('${p._id}')">Agregar a favoritos</button>
         </div>
@@ -81,10 +120,12 @@
       alert(r.mensaje);
     }
 
-    cargarPropiedades();
+    // Cargar todo al inicio
+    buscar();
   </script>
 </body>
 </html>
+
 
 
 

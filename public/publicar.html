@@ -4,20 +4,82 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Publicar Propiedad</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to right, #dbe6f6, #c5796d);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input, textarea, select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1em;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #verMisPublicacionesBtn {
+      margin-top: 10px;
+      background-color: #6c757d;
+    }
+
+    #verMisPublicacionesBtn:hover {
+      background-color: #545b62;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Publicar nueva propiedad</h1>
-    <form id="formPublicacion">
-      <input type="text" id="titulo" placeholder="Título" required />
-      <input type="text" id="direccion" placeholder="Dirección" required />
-      <input type="number" id="precio" placeholder="Precio" required />
-      <textarea id="descripcion" placeholder="Descripción" required></textarea>
+    <form id="formPublicacion" enctype="multipart/form-data">
+      <input type="text" id="titulo" name="titulo" placeholder="Título" required />
+      <input type="text" id="direccion" name="direccion" placeholder="Dirección" required />
+      <input type="text" id="ubicacion" name="ubicacion" placeholder="Ubicación (ciudad, provincia)" required />
+      <input type="number" id="precio" name="precio" placeholder="Precio" required />
+      <textarea id="descripcion" name="descripcion" placeholder="Descripción" required></textarea>
+      <input type="file" id="imagen" name="imagen" accept="image/*" required />
       <button type="submit">Publicar</button>
     </form>
 
-    <!-- Botón directo sin <a> -->
     <button id="verMisPublicacionesBtn">Ver mis publicaciones</button>
   </div>
 
@@ -26,37 +88,24 @@
     const form = document.getElementById('formPublicacion');
     const verBtn = document.getElementById('verMisPublicacionesBtn');
 
-    // Verificar sesión
     if (!usuario || usuario.tipo !== 'dueño') {
       alert('Acceso no autorizado');
       window.location.href = 'login.html';
     }
 
-    // Redirección al hacer clic en "Ver mis publicaciones"
     verBtn.addEventListener('click', () => {
-      if (usuario?.email) {
-        window.location.href = `ver-propiedades.html?email=${encodeURIComponent(usuario.email)}`;
-      } else {
-        alert('No se encontró el email del usuario.');
-      }
+      window.location.href = `ver-propiedades.html?email=${encodeURIComponent(usuario.email)}`;
     });
 
-    // Publicar propiedad
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const nuevaPropiedad = {
-        titulo: document.getElementById('titulo').value,
-        direccion: document.getElementById('direccion').value,
-        precio: document.getElementById('precio').value,
-        descripcion: document.getElementById('descripcion').value,
-        emailDueno: usuario.email
-      };
+      const formData = new FormData(form);
+      formData.append('emailDueno', usuario.email);  // Agregamos el dueño
 
       const res = await fetch('/publicar', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(nuevaPropiedad)
+        body: formData
       });
 
       if (res.ok) {
@@ -69,6 +118,7 @@
   </script>
 </body>
 </html>
+
 
 
 

@@ -113,7 +113,8 @@ app.post('/login', async (req, res) => {
 
 // ---------------------- PUBLICAR PROPIEDAD (DUEÑO) ----------------------
 app.post('/publicar', upload.single('imagen'), async (req, res) => {
-  const { titulo, descripcion, direccion, precio, emailDueno } = req.body;
+  const { titulo, descripcion, direccion, precio, emailDueno, ubicacion } = req.body;
+
   const imagen = req.file ? `/imagenes/${req.file.filename}` : '';
 
   if (!titulo || !descripcion || !direccion || !precio || !emailDueno) {
@@ -125,6 +126,7 @@ app.post('/publicar', upload.single('imagen'), async (req, res) => {
       titulo,
       descripcion,
       direccion,
+      ubicacion,
       precio: parseFloat(precio),
       emailDueno,
       imagen
@@ -174,5 +176,23 @@ app.delete('/eliminar-propiedad/:id', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al eliminar propiedad.' });
+  }
+});
+
+// ---------------------- BUSCAR POR UBICACIÓN ----------------------
+app.get('/buscar', async (req, res) => {
+  const ubicacion = req.query.ubicacion;
+
+  try {
+    let filtro = {};
+    if (ubicacion) {
+      filtro.ubicacion = { $regex: ubicacion, $options: 'i' }; // búsqueda parcial, insensible a mayúsculas
+    }
+
+    const resultados = await propiedadesCollection.find(filtro).toArray();
+    res.json(resultados);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al buscar propiedades.' });
   }
 });
